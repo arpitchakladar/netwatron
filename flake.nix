@@ -30,10 +30,6 @@
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-      updates = import ./updates {
-        inherit pkgs;
-        lib = pkgs.lib;
-      };
     in
     {
       formatter.${system} = pkgs.nixfmt-tree;
@@ -43,7 +39,11 @@
           (
             { ... }:
             {
-              git-hooks.hooks.nixfmt.enable = true;
+              git-hooks.hooks = {
+                nixfmt.enable = true;
+                black.enable = true;
+                pyright.enable = true;
+              };
 
               # Expose libpcap to Python and the rest of the shell
               env.LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.libpcap ];
@@ -70,6 +70,7 @@
                       scapy
                       dpkt
                       cryptography
+                      black
                     ]
                   );
                   lsp = {
