@@ -51,4 +51,8 @@ def trap_live_traffic(interface: str):
 
 
 if __name__ == "__main__":
-    trap_live_traffic("enp4s0")
+    if len(sys.argv) < 2:
+        print(f"Usage: {sys.argv[0]} <interface>")
+        sys.exit(1)
+
+    trap_live_traffic(sys.argv[1])
