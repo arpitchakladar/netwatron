@@ -71,6 +71,8 @@
                       dpkt
                       cryptography
                       black
+                      textual
+                      rich
                     ]
                   );
                   lsp = {
