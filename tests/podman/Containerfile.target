@@ -1,0 +1,11 @@
+FROM docker.io/python:3.14-slim
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir flask requests
+
+COPY podman/target_server.py /app/target_server.py
+
+EXPOSE 8080
+
+CMD ["python", "/app/target_server.py", "8080"]
