@@ -30,12 +30,18 @@ class TargetHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         pass  # Silence default stderr logging
 
+    def log_error(self, format, *args):
+        pass  # Suppress socketserver exception tracebacks
+
     def _send(self, code: int, content_type: str, body: bytes) -> None:
-        self.send_response(code)
-        self.send_header("Content-Type", content_type)
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
+        try:
+            self.send_response(code)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+        except BrokenPipeError, ConnectionResetError, OSError:
+            pass
 
     def do_GET(self) -> None:
         routes = {
