@@ -1,0 +1,35 @@
+# Override: run slowloris scenario
+# Usage: podman-compose -f docker-compose.yml -f podman-compose.scenario-slowloris.yml up
+
+version: "3.8"
+
+services:
+  attacker1:
+    environment:
+      - SCENARIO=slowloris
+      - INTENSITY=50
+    command: sh -c 'python /app/tests/slowloris.py'
+
+  attacker2:
+    environment:
+      - SCENARIO=slowloris
+      - INTENSITY=50
+    command: sh -c 'python /app/tests/slowloris.py'
+
+  attacker3:
+    environment:
+      - SCENARIO=slowloris
+      - INTENSITY=50
+    command: sh -c 'python /app/tests/slowloris.py'
+
+  attacker4:
+    environment:
+      - SCENARIO=slowloris
+      - INTENSITY=30
+    command: sh -c 'python /app/tests/slowloris.py'
+
+  attacker5:
+    environment:
+      - SCENARIO=slowloris
+      - INTENSITY=30
+    command: sh -c 'python /app/tests/slowloris.py'

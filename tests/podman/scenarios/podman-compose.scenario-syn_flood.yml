@@ -1,0 +1,30 @@
+# Override: run SYN flood scenario
+# Usage: podman-compose -f docker-compose.yml -f podman-compose.scenario-syn_flood.yml up
+
+version: "3.8"
+
+services:
+  attacker1:
+    environment:
+      - SCENARIO=syn_flood
+    command: sh -c 'python /app/tests/syn_flood.py'
+
+  attacker2:
+    environment:
+      - SCENARIO=syn_flood
+    command: sh -c 'python /app/tests/syn_flood.py'
+
+  attacker3:
+    environment:
+      - SCENARIO=syn_flood
+    command: sh -c 'python /app/tests/syn_flood.py'
+
+  attacker4:
+    environment:
+      - SCENARIO=syn_flood
+    command: sh -c 'python /app/tests/syn_flood.py'
+
+  attacker5:
+    environment:
+      - SCENARIO=syn_flood
+    command: sh -c 'python /app/tests/syn_flood.py'

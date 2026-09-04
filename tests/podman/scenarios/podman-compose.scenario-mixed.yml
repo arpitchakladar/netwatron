@@ -1,0 +1,30 @@
+# Override: run mixed traffic scenario
+# Usage: podman-compose -f docker-compose.yml -f podman-compose.scenario-mixed.yml up
+
+version: "3.8"
+
+services:
+  attacker1:
+    environment:
+      - SCENARIO=mixed_traffic
+    command: sh -c 'python /app/tests/mixed_traffic.py'
+
+  attacker2:
+    environment:
+      - SCENARIO=mixed_traffic
+    command: sh -c 'python /app/tests/mixed_traffic.py'
+
+  attacker3:
+    environment:
+      - SCENARIO=mixed_traffic
+    command: sh -c 'python /app/tests/mixed_traffic.py'
+
+  attacker4:
+    environment:
+      - SCENARIO=mixed_traffic
+    command: sh -c 'python /app/tests/mixed_traffic.py'
+
+  attacker5:
+    environment:
+      - SCENARIO=mixed_traffic
+    command: sh -c 'python /app/tests/mixed_traffic.py'

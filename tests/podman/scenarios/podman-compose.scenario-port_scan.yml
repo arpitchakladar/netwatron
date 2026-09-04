@@ -1,0 +1,30 @@
+# Override: run port scan scenario
+# Usage: podman-compose -f docker-compose.yml -f podman-compose.scenario-port_scan.yml up
+
+version: "3.8"
+
+services:
+  attacker1:
+    environment:
+      - SCENARIO=port_scan
+    command: sh -c 'python /app/tests/port_scan.py'
+
+  attacker2:
+    environment:
+      - SCENARIO=port_scan
+    command: sh -c 'python /app/tests/port_scan.py'
+
+  attacker3:
+    environment:
+      - SCENARIO=port_scan
+    command: sh -c 'python /app/tests/port_scan.py'
+
+  attacker4:
+    environment:
+      - SCENARIO=port_scan
+    command: sh -c 'python /app/tests/port_scan.py'
+
+  attacker5:
+    environment:
+      - SCENARIO=port_scan
+    command: sh -c 'python /app/tests/port_scan.py'

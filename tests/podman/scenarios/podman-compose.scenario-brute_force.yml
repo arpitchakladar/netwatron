@@ -1,0 +1,30 @@
+# Override: run brute force scenario
+# Usage: podman-compose -f docker-compose.yml -f podman-compose.scenario-brute_force.yml up
+
+version: "3.8"
+
+services:
+  attacker1:
+    environment:
+      - SCENARIO=brute_force
+    command: sh -c 'python /app/tests/brute_force.py'
+
+  attacker2:
+    environment:
+      - SCENARIO=brute_force
+    command: sh -c 'python /app/tests/brute_force.py'
+
+  attacker3:
+    environment:
+      - SCENARIO=brute_force
+    command: sh -c 'python /app/tests/brute_force.py'
+
+  attacker4:
+    environment:
+      - SCENARIO=brute_force
+    command: sh -c 'python /app/tests/brute_force.py'
+
+  attacker5:
+    environment:
+      - SCENARIO=brute_force
+    command: sh -c 'python /app/tests/brute_force.py'
