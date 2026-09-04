@@ -12,6 +12,7 @@ import queue
 import sys
 import threading
 import time
+from collections import deque
 from pathlib import Path
 
 from rich.text import Text
@@ -23,9 +24,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "lib"))
 
 from flow_generator import PacketToFlowParser
+from netwatron.placeholder import TemporalWorldModelPlaceholder
+from netwatron.runtime import LiveFlowWindowBuffer, LoadedWorldModel
 from sequence_buffer import TemporalSequenceBuffer
 from state_aggregator import NetworkState, NetworkStateAggregator
-from world_model_placeholder import TemporalWorldModelPlaceholder
 
 
 class AdvancedNetworkMonitorApp(App[None]):
@@ -47,6 +49,7 @@ class AdvancedNetworkMonitorApp(App[None]):
         window_seconds: float = 5.0,
         sequence_length: int = 12,
         surprise_threshold: float = 2.5,
+        checkpoint_path: Path | None = None,
     ) -> None:
         super().__init__()
         self.interface = interface
@@ -56,6 +59,23 @@ class AdvancedNetworkMonitorApp(App[None]):
         self._events: queue.SimpleQueue[str] = queue.SimpleQueue()
         self._sequence = TemporalSequenceBuffer(sequence_length)
         self._world_model = TemporalWorldModelPlaceholder()
+        self._trained_model = (
+            LoadedWorldModel.load(checkpoint_path) if checkpoint_path else None
+        )
+        self._live_windows = (
+            LiveFlowWindowBuffer(self._trained_model, window_seconds)
+            if self._trained_model
+            else None
+        )
+        self._model_history: deque = deque(
+            maxlen=(
+                self._trained_model.cfg.dynamics.history_len
+                if self._trained_model
+                else 1
+            )
+        )
+        self._model_results: queue.SimpleQueue[dict] = queue.SimpleQueue()
+        self._latest_model_result: dict | None = None
         self._stop_capture = threading.Event()
         self._capture_thread: threading.Thread | None = None
 
@@ -112,20 +132,42 @@ class AdvancedNetworkMonitorApp(App[None]):
                 for flow in parser.extract_finished_flows(time.time()):
                     self._submit_flow(flow)
                 self._states_put(self._aggregator.advance(time.time()))
+                self._advance_live_model(time.time())
         except Exception as error:
             # Permissions and bad interfaces are operator errors.
             self._events.put(f"Capture stopped: {error}")
 
     def _submit_flow(self, flow: dict[str, object]) -> None:
-        self._states_put(
-            self._aggregator.add_flow(flow, observed_at=time.time())
-        )
+        now = time.time()
+        self._states_put(self._aggregator.add_flow(flow, observed_at=now))
+        if self._live_windows:
+            self._submit_live_windows(self._live_windows.add(flow, now))
+
+    def _advance_live_model(self, now: float) -> None:
+        if self._live_windows:
+            self._submit_live_windows(self._live_windows.advance(now))
+
+    def _submit_live_windows(self, windows: list) -> None:
+        model = self._trained_model
+        if model is None:
+            return
+        for window in windows:
+            self._model_history.append(window)
+            if len(self._model_history) == self._model_history.maxlen:
+                self._model_results.put(
+                    model.forecast(list(self._model_history))
+                )
 
     def _states_put(self, states: list[NetworkState]) -> None:
         for state in states:
             self._states.put(state)
 
     def _drain_capture_queues(self) -> None:
+        while True:
+            try:
+                self._latest_model_result = self._model_results.get_nowait()
+            except queue.Empty:
+                break
         while True:
             try:
                 self._handle_state(self._states.get_nowait())
@@ -148,7 +190,13 @@ class AdvancedNetworkMonitorApp(App[None]):
             return
 
         result = self._world_model.evaluate_trajectory(self._sequence.matrix())
-        blocked = result.dynamics_surprise_score >= self.surprise_threshold
+        risk = result.trajectory_risk
+        if self._latest_model_result is not None:
+            risk = float(self._latest_model_result["trajectory_risk"])
+        blocked = (
+            result.dynamics_surprise_score >= self.surprise_threshold
+            or risk >= 0.5
+        )
         verdict = "BLOCKED THREAT" if blocked else "OBSERVE"
         style = "bold red" if blocked else "green"
         cells = [
@@ -158,7 +206,7 @@ class AdvancedNetworkMonitorApp(App[None]):
             str(int(state.features["total_bytes"])),
             f"{state.features['avg_flow_duration_ms']:.1f} ms",
             f"{result.dynamics_surprise_score:.3f}",
-            f"{result.trajectory_risk:.1%}",
+            f"{risk:.1%}",
             verdict,
         ]
         table = self.query_one("#state-table", DataTable)
@@ -167,7 +215,7 @@ class AdvancedNetworkMonitorApp(App[None]):
             f"{self.interface} · {self._sequence.sequence_length}×"
             f"{len(self._sequence.feature_names)} state sequence · "
             f"surprise {result.dynamics_surprise_score:.3f} · "
-            f"risk {result.trajectory_risk:.1%} · {verdict}"
+            f"risk {risk:.1%} · {verdict}"
         )
 
     def _set_summary(self, message: str) -> None:
@@ -188,6 +236,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--surprise-threshold", type=float, default=2.5, help="block threshold"
     )
+    parser.add_argument(
+        "--model",
+        type=Path,
+        help="checkpoint produced by scripts/train_model.py",
+    )
     return parser.parse_args()
 
 
@@ -198,4 +251,5 @@ if __name__ == "__main__":
         window_seconds=args.window,
         sequence_length=args.history,
         surprise_threshold=args.surprise_threshold,
+        checkpoint_path=args.model,
     ).run()
