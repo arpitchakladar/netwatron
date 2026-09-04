@@ -1,5 +1,5 @@
 {
-  description = "Home Manager configuration of arpit.";
+  description = "Development flake for netwatron";
   inputs = {
     nixpkgs.url = "nixpkgs";
     devenv = {
@@ -7,20 +7,20 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-
   nixConfig = {
     extra-substituters = [
       "https://cache.nixos.org"
       "https://nix-community.cachix.org"
       "https://devenv.cachix.org"
+      "https://cuda-maintainers.cachix.org"
     ];
     extra-trusted-public-keys = [
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw="
+      "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
     ];
   };
-
   outputs =
     {
       nixpkgs,
@@ -29,7 +29,22 @@
     }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        config = {
+          allowUnfree = true;
+          cudaSupport = true;
+          cudaCapabilities = [ "12.0" ];
+          cudaForwardCompat = false;
+        };
+        overlays = [
+          (final: prev: {
+            cudaPackages = prev.cudaPackages_13;
+            ucx = prev.ucx.override { enableCuda = false; };
+            openmpi = prev.openmpi.override { cudaSupport = false; };
+          })
+        ];
+      };
     in
     {
       formatter.${system} = pkgs.nixfmt-tree;
@@ -44,10 +59,7 @@
                 black.enable = true;
                 pyright.enable = true;
               };
-
-              # Expose libpcap to Python and the rest of the shell
               env.LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.libpcap ];
-
               languages = {
                 nix = {
                   enable = true;
@@ -74,6 +86,12 @@
                       textual
                       rich
                       numpy
+                      pandas
+                      scikit-learn
+                      ((ps.torch-bin.override { cudaPackages = pkgs.cudaPackages_13; }).overrideAttrs (old: {
+                        pythonRelaxDeps = [ "setuptools" ];
+                        nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ ps.pythonRelaxDepsHook ];
+                      }))
                     ]
                   );
                   lsp = {
