@@ -10,7 +10,12 @@ import signal
 import sys
 import time
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(
+    0,
+    os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    ),
+)
 
 from lib.tests.packet_utils import build_syn_packet, send_raw_packet
 from lib.tests.logger import GroundTruthLogger

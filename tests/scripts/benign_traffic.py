@@ -12,7 +12,12 @@ import time
 
 import requests
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(
+    0,
+    os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    ),
+)
 
 from lib.tests.logger import GroundTruthLogger
 from lib.tests.scenario_config import load_from_env, wait_for_target
