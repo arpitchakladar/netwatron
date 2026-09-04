@@ -1,0 +1,182 @@
+# docker-compose.yml — NIDS attack-simulation test harness
+#
+# Usage:
+#   podman-compose up                    # run default (port_scan) scenario
+#   SCENARIO=syn_flood podman-compose up # run a specific scenario
+#
+# Rootless caveat:
+#   Raw packet crafting (SYN floods, Scapy) requires NET_RAW/NET_ADMIN.
+#   Rootless Podman restricts these capabilities.  If raw sockets fail
+#   inside a rootless container, switch to rootful Podman:
+#     sudo podman-compose --podman-env=CONTAINERS_CONF= up
+#   Or run the entire compose stack under a rootful Podman context.
+#
+# All traffic is confined to the nids-test-net bridge (172.28.0.0/24).
+# No external IPs or domains are targeted.
+
+version: "3.8"
+
+services:
+  target:
+    build:
+      context: .
+      dockerfile: tests/podman/Containerfile.target
+    container_name: nids-target
+    hostname: target
+    networks:
+      nids-test-net:
+        ipv4_address: 172.28.0.10
+    expose:
+      - "8080"
+
+  attacker1:
+    build:
+      context: .
+      dockerfile: tests/podman/Containerfile.attacker
+    container_name: nids-attacker1
+    hostname: attacker1
+    depends_on:
+      - target
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    environment:
+      - SCENARIO=${SCENARIO:-port_scan}
+      - TARGET_IP=172.28.0.10
+      - ATTACKER_IP=172.28.0.11
+      - DURATION=${DURATION:-30}
+      - INTENSITY=${INTENSITY:-100}
+    networks:
+      nids-test-net:
+        ipv4_address: 172.28.0.11
+    volumes:
+      - ./logs:/app/logs
+    command: >
+      sh -c 'python /app/tests/scripts/${SCENARIO}.py'
+
+  attacker2:
+    build:
+      context: .
+      dockerfile: tests/podman/Containerfile.attacker
+    container_name: nids-attacker2
+    hostname: attacker2
+    depends_on:
+      - target
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    environment:
+      - SCENARIO=${SCENARIO:-port_scan}
+      - TARGET_IP=172.28.0.10
+      - ATTACKER_IP=172.28.0.12
+      - DURATION=${DURATION:-30}
+      - INTENSITY=${INTENSITY:-100}
+    networks:
+      nids-test-net:
+        ipv4_address: 172.28.0.12
+    volumes:
+      - ./logs:/app/logs
+    command: >
+      sh -c 'python /app/tests/scripts/${SCENARIO}.py'
+
+  attacker3:
+    build:
+      context: .
+      dockerfile: tests/podman/Containerfile.attacker
+    container_name: nids-attacker3
+    hostname: attacker3
+    depends_on:
+      - target
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    environment:
+      - SCENARIO=${SCENARIO:-port_scan}
+      - TARGET_IP=172.28.0.10
+      - ATTACKER_IP=172.28.0.13
+      - DURATION=${DURATION:-30}
+      - INTENSITY=${INTENSITY:-100}
+    networks:
+      nids-test-net:
+        ipv4_address: 172.28.0.13
+    volumes:
+      - ./logs:/app/logs
+    command: >
+      sh -c 'python /app/tests/scripts/${SCENARIO}.py'
+
+  attacker4:
+    build:
+      context: .
+      dockerfile: tests/podman/Containerfile.attacker
+    container_name: nids-attacker4
+    hostname: attacker4
+    depends_on:
+      - target
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    environment:
+      - SCENARIO=${SCENARIO:-port_scan}
+      - TARGET_IP=172.28.0.10
+      - ATTACKER_IP=172.28.0.14
+      - DURATION=${DURATION:-30}
+      - INTENSITY=${INTENSITY:-100}
+    networks:
+      nids-test-net:
+        ipv4_address: 172.28.0.14
+    volumes:
+      - ./logs:/app/logs
+    command: >
+      sh -c 'python /app/tests/scripts/${SCENARIO}.py'
+
+  attacker5:
+    build:
+      context: .
+      dockerfile: tests/podman/Containerfile.attacker
+    container_name: nids-attacker5
+    hostname: attacker5
+    depends_on:
+      - target
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    environment:
+      - SCENARIO=${SCENARIO:-port_scan}
+      - TARGET_IP=172.28.0.10
+      - ATTACKER_IP=172.28.0.15
+      - DURATION=${DURATION:-30}
+      - INTENSITY=${INTENSITY:-100}
+    networks:
+      nids-test-net:
+        ipv4_address: 172.28.0.15
+    volumes:
+      - ./logs:/app/logs
+    command: >
+      sh -c 'python /app/tests/scripts/${SCENARIO}.py'
+
+  benign:
+    build:
+      context: .
+      dockerfile: tests/podman/Containerfile.benign
+    container_name: nids-benign
+    hostname: benign
+    depends_on:
+      - target
+    environment:
+      - TARGET_IP=172.28.0.10
+      - ATTACKER_IP=172.28.0.100
+      - DURATION=${DURATION:-30}
+      - INTENSITY=${INTENSITY:-50}
+    networks:
+      nids-test-net:
+        ipv4_address: 172.28.0.100
+    volumes:
+      - ./logs:/app/logs
+
+networks:
+  nids-test-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
+          gateway: 172.28.0.1
