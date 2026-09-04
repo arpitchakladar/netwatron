@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN pip install --no-cache-dir flask requests
 
-COPY podman/target_server.py /app/target_server.py
+COPY tests/podman/target_server.py /app/target_server.py
 
 EXPOSE 8080
 

@@ -11,4 +11,4 @@ RUN mkdir -p /app/logs
 
 ENV PYTHONPATH=/app
 
-CMD ["python", "/app/tests/benign_traffic.py"]
+CMD ["python", "/app/tests/scripts/benign_traffic.py"]
