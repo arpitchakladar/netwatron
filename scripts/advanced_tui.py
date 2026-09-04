@@ -23,11 +23,11 @@ from textual.widgets import DataTable, Footer, Header, Static
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "lib"))
 
-from flow_generator import PacketToFlowParser
+from netwatron.flow_generator import PacketToFlowParser
 from netwatron.placeholder import TemporalWorldModelPlaceholder
 from netwatron.runtime import LiveFlowWindowBuffer, LoadedWorldModel
-from sequence_buffer import TemporalSequenceBuffer
-from state_aggregator import NetworkState, NetworkStateAggregator
+from netwatron.sequence_buffer import TemporalSequenceBuffer
+from netwatron.state_aggregator import NetworkState, NetworkStateAggregator
 
 
 class AdvancedNetworkMonitorApp(App[None]):

@@ -8,7 +8,7 @@ from collections.abc import Iterable
 import numpy as np
 from numpy.typing import NDArray
 
-from state_aggregator import FEATURE_NAMES, NetworkState
+from .state_aggregator import FEATURE_NAMES, NetworkState
 
 
 class TemporalSequenceBuffer:
