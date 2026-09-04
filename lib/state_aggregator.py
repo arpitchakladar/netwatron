@@ -7,6 +7,9 @@ from dataclasses import dataclass
 from threading import Lock
 from typing import Any
 
+import numpy as np
+from numpy.typing import NDArray
+
 FEATURE_NAMES = (
     "flow_count",
     "active_source_count",
@@ -33,9 +36,12 @@ class NetworkState:
 
     def to_vector(
         self, feature_names: tuple[str, ...] = FEATURE_NAMES
-    ) -> list[float]:
+    ) -> NDArray[np.float64]:
         """Return a stable feature order suitable for a temporal model."""
-        return [self.features.get(name, 0.0) for name in feature_names]
+        return np.asarray(
+            [self.features.get(name, 0.0) for name in feature_names],
+            dtype=np.float64,
+        )
 
 
 class NetworkStateAggregator:

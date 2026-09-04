@@ -73,6 +73,7 @@
                       black
                       textual
                       rich
+                      numpy
                     ]
                   );
                   lsp = {

@@ -5,6 +5,9 @@ from __future__ import annotations
 from collections import deque
 from collections.abc import Iterable
 
+import numpy as np
+from numpy.typing import NDArray
+
 from state_aggregator import FEATURE_NAMES, NetworkState
 
 
@@ -32,9 +35,13 @@ class TemporalSequenceBuffer:
     def is_ready(self) -> bool:
         return len(self._states) == self.sequence_length
 
-    def matrix(self) -> list[list[float]]:
-        """Return an ``[time, feature]`` matrix with a stable feature ordering."""
-        return [state.to_vector(self.feature_names) for state in self._states]
+    def matrix(self) -> NDArray[np.float64]:
+        """Return a contiguous ``[time, feature]`` NumPy matrix."""
+        if not self._states:
+            return np.empty((0, len(self.feature_names)), dtype=np.float64)
+        return np.vstack(
+            [state.to_vector(self.feature_names) for state in self._states]
+        )
 
     def states(self) -> tuple[NetworkState, ...]:
         return tuple(self._states)
