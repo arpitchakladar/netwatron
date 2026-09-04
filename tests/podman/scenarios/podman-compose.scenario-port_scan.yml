@@ -7,24 +7,24 @@ services:
   attacker1:
     environment:
       - SCENARIO=port_scan
-    command: sh -c 'python /app/tests/port_scan.py'
+    command: sh -c 'python /app/tests/scripts/port_scan.py'
 
   attacker2:
     environment:
       - SCENARIO=port_scan
-    command: sh -c 'python /app/tests/port_scan.py'
+    command: sh -c 'python /app/tests/scripts/port_scan.py'
 
   attacker3:
     environment:
       - SCENARIO=port_scan
-    command: sh -c 'python /app/tests/port_scan.py'
+    command: sh -c 'python /app/tests/scripts/port_scan.py'
 
   attacker4:
     environment:
       - SCENARIO=port_scan
-    command: sh -c 'python /app/tests/port_scan.py'
+    command: sh -c 'python /app/tests/scripts/port_scan.py'
 
   attacker5:
     environment:
       - SCENARIO=port_scan
-    command: sh -c 'python /app/tests/port_scan.py'
+    command: sh -c 'python /app/tests/scripts/port_scan.py'

@@ -7,24 +7,24 @@ services:
   attacker1:
     environment:
       - SCENARIO=ddos_distributed
-    command: sh -c 'python /app/tests/ddos_distributed.py'
+    command: sh -c 'python /app/tests/scripts/ddos_distributed.py'
 
   attacker2:
     environment:
       - SCENARIO=ddos_distributed
-    command: sh -c 'python /app/tests/ddos_distributed.py'
+    command: sh -c 'python /app/tests/scripts/ddos_distributed.py'
 
   attacker3:
     environment:
       - SCENARIO=ddos_distributed
-    command: sh -c 'python /app/tests/ddos_distributed.py'
+    command: sh -c 'python /app/tests/scripts/ddos_distributed.py'
 
   attacker4:
     environment:
       - SCENARIO=ddos_distributed
-    command: sh -c 'python /app/tests/ddos_distributed.py'
+    command: sh -c 'python /app/tests/scripts/ddos_distributed.py'
 
   attacker5:
     environment:
       - SCENARIO=ddos_distributed
-    command: sh -c 'python /app/tests/ddos_distributed.py'
+    command: sh -c 'python /app/tests/scripts/ddos_distributed.py'

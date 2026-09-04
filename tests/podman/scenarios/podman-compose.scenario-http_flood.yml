@@ -7,24 +7,24 @@ services:
   attacker1:
     environment:
       - SCENARIO=http_flood
-    command: sh -c 'python /app/tests/http_flood.py'
+    command: sh -c 'python /app/tests/scripts/http_flood.py'
 
   attacker2:
     environment:
       - SCENARIO=http_flood
-    command: sh -c 'python /app/tests/http_flood.py'
+    command: sh -c 'python /app/tests/scripts/http_flood.py'
 
   attacker3:
     environment:
       - SCENARIO=http_flood
-    command: sh -c 'python /app/tests/http_flood.py'
+    command: sh -c 'python /app/tests/scripts/http_flood.py'
 
   attacker4:
     environment:
       - SCENARIO=http_flood
-    command: sh -c 'python /app/tests/http_flood.py'
+    command: sh -c 'python /app/tests/scripts/http_flood.py'
 
   attacker5:
     environment:
       - SCENARIO=http_flood
-    command: sh -c 'python /app/tests/http_flood.py'
+    command: sh -c 'python /app/tests/scripts/http_flood.py'

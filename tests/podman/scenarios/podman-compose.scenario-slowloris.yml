@@ -8,28 +8,28 @@ services:
     environment:
       - SCENARIO=slowloris
       - INTENSITY=50
-    command: sh -c 'python /app/tests/slowloris.py'
+    command: sh -c 'python /app/tests/scripts/slowloris.py'
 
   attacker2:
     environment:
       - SCENARIO=slowloris
       - INTENSITY=50
-    command: sh -c 'python /app/tests/slowloris.py'
+    command: sh -c 'python /app/tests/scripts/slowloris.py'
 
   attacker3:
     environment:
       - SCENARIO=slowloris
       - INTENSITY=50
-    command: sh -c 'python /app/tests/slowloris.py'
+    command: sh -c 'python /app/tests/scripts/slowloris.py'
 
   attacker4:
     environment:
       - SCENARIO=slowloris
       - INTENSITY=30
-    command: sh -c 'python /app/tests/slowloris.py'
+    command: sh -c 'python /app/tests/scripts/slowloris.py'
 
   attacker5:
     environment:
       - SCENARIO=slowloris
       - INTENSITY=30
-    command: sh -c 'python /app/tests/slowloris.py'
+    command: sh -c 'python /app/tests/scripts/slowloris.py'

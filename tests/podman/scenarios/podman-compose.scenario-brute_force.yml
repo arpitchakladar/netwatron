@@ -7,24 +7,24 @@ services:
   attacker1:
     environment:
       - SCENARIO=brute_force
-    command: sh -c 'python /app/tests/brute_force.py'
+    command: sh -c 'python /app/tests/scripts/brute_force.py'
 
   attacker2:
     environment:
       - SCENARIO=brute_force
-    command: sh -c 'python /app/tests/brute_force.py'
+    command: sh -c 'python /app/tests/scripts/brute_force.py'
 
   attacker3:
     environment:
       - SCENARIO=brute_force
-    command: sh -c 'python /app/tests/brute_force.py'
+    command: sh -c 'python /app/tests/scripts/brute_force.py'
 
   attacker4:
     environment:
       - SCENARIO=brute_force
-    command: sh -c 'python /app/tests/brute_force.py'
+    command: sh -c 'python /app/tests/scripts/brute_force.py'
 
   attacker5:
     environment:
       - SCENARIO=brute_force
-    command: sh -c 'python /app/tests/brute_force.py'
+    command: sh -c 'python /app/tests/scripts/brute_force.py'
