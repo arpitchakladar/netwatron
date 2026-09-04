@@ -102,6 +102,8 @@
               };
               packages = [
                 pkgs.libpcap
+                pkgs.podman
+                pkgs.podman-compose
               ];
             }
           )
