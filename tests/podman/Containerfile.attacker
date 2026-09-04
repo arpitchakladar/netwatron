@@ -1,0 +1,14 @@
+FROM docker.io/python:3.14-slim
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir scapy requests pyyaml
+
+COPY lib/ /app/lib/
+COPY tests/ /app/tests/
+
+RUN mkdir -p /app/logs
+
+ENV PYTHONPATH=/app
+
+CMD ["python", "/app/tests/port_scan.py"]
