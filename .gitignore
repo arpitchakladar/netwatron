@@ -1,3 +1,5 @@
 **/__pycache__
 .pre-commit-config.yaml
 .devenv
+assets/datasets
+artifacts
